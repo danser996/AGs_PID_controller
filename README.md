@@ -1,0 +1,1 @@
+Algoritmos geneticos aplicados al control de procesos, para hallar los parametros(ganancias) que cumplan con las condiciones de diseño.

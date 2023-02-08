@@ -10,7 +10,7 @@
 ################################################################################
 #                          LIBRERÍAS NECESARIAS                                #
 ################################################################################
-
+from funct import *
 import numpy as np
 import random
 import warnings
@@ -1712,23 +1712,23 @@ if opcion == 1:
     kp = variables_optimas[0][0]
     print('Las parametros optimos para el controlador son')
     print(f'Ganancia proporcional: {kp}')
-    arr = list([kp])
+    # arr = list([kp])
     # np.savetxt('values_P.txt', arr, delimiter = '    ')
     print('Parametros cargados...')
+    controlador_P(kp)
 
 elif opcion == 2:
-    # print(variables_optimas)
     kp = variables_optimas[-1][0]
     ki = variables_optimas[-1][1]
     print('Las parametros optimos para el controlador son')
     print(f'Ganancia proporcional: {kp}')
     print(f'tiempo integral: {ki}')
-    #arr = list([kp, ki])
-    #np.savetxt('values_PI.txt', arr, delimiter = '    ')
+    # arr = list([kp, ki])
+    # np.savetxt('values_PI.txt', arr, delimiter = '    ')
     print('Parametros cargados...')
+    controlador_PI(kp, ki)
 
 else:
-    # print(variables_optimas)
     kp = variables_optimas[0][0]
     ki = variables_optimas[0][1]
     kd = variables_optimas[0][2]
@@ -1736,6 +1736,7 @@ else:
     print(f'Ganancia proporcional: {kp}')
     print(f'Ganancia integral: {ki}')
     print(f'Ganancia derivativa: {kd}')
-    #arr = list([kp, ki, kd])
-    #np.savetxt('values_PID.txt', arr, delimiter = '    ')
+    # arr = list([kp, ki, kd])
+    # np.savetxt('values_PID.txt', arr, delimiter = '    ')
     print('Parametros cargados...')
+    controlador_PID(kp, ki, kd)

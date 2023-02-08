@@ -1617,7 +1617,6 @@ def funcion_objetivo_C_P(kp):
     Gt = co.series(Gc, G)
     Gtc = co.feedback(Gt)
     data = co.step_info(Gtc)
-    parametros = list(data.values())
     response = co.step_response(Gtc)
     e_ss = abs(1 - response.outputs[-1])
     return (0.2 + abs(e_ss))
@@ -1650,23 +1649,50 @@ def funcion_objetivo_C_PID(kp, ki, kd):
     tss = float(parametros[1])
     mp = float(parametros[4])
     response = co.step_response(Gtc)
-    # e_abs = sum(abs(response.inputs - response.outputs))
     e_ss = abs(1 - response.outputs[-1])
     e = abs(90 - tss) + abs(1.1 - mp) + e_ss
     return e
     
+menu = '''Lista de controladores que puedes utilizar.
+        1 - Proporcioanal (P)
+        2 - Proporcional Integral (PI)
+        3 - Proporcional Integral derivativo (PID)
+        Elija el numero del controlador que desea: '''
+
+opcion = int(input(menu))
+while opcion not in [1, 2, 3]:
+    print('La opcion ingresada no es valida... Vuelva a intentarlo')
+    opcion = input(menu)
+
+if opcion == 1:
+    controlador = funcion_objetivo_C_P
+    lim_inf = [0.001]
+    lim_sup = [5]
+    n_var = 1
+
+elif opcion == 2:
+    controlador = funcion_objetivo_C_PI
+    lim_inf = [0, 0.0001]
+    lim_sup = [500, 2]
+    n_var = 2
+else:
+    controlador = funcion_objetivo_C_PID
+    lim_inf = [0.001, 0.01, 0.001]
+    lim_sup = [0.5, 0.2, 0.1]
+    n_var = 3
+
 poblacion = Poblacion(
     n_individuos=50,
-    n_variables=1,
-    limites_inf=[0.001],
-    limites_sup=[5],
+    n_variables=n_var,
+    limites_inf=lim_inf,
+    limites_sup=lim_sup,
     verbose=False
 )
 
 variables_optimas = poblacion.optimizar(
-    funcion_objetivo=funcion_objetivo,
+    funcion_objetivo=controlador,
     optimizacion="minimizar",
-    n_generaciones=200,
+    n_generaciones=2,
     metodo_seleccion="tournament",
     elitismo=0.1,
     prob_mut=0.05,
@@ -1680,3 +1706,36 @@ variables_optimas = poblacion.optimizar(
     tolerancia_parada=10**-16,
     verbose=False
 )
+
+if opcion == 1:
+    print(variables_optimas)
+    kp = variables_optimas[0][0]
+    print('Las parametros optimos para el controlador son')
+    print(f'Ganancia proporcional: {kp}')
+    arr = list([kp])
+    # np.savetxt('values_P.txt', arr, delimiter = '    ')
+    print('Parametros cargados...')
+
+elif opcion == 2:
+    # print(variables_optimas)
+    kp = variables_optimas[-1][0]
+    ki = variables_optimas[-1][1]
+    print('Las parametros optimos para el controlador son')
+    print(f'Ganancia proporcional: {kp}')
+    print(f'tiempo integral: {ki}')
+    #arr = list([kp, ki])
+    #np.savetxt('values_PI.txt', arr, delimiter = '    ')
+    print('Parametros cargados...')
+
+else:
+    # print(variables_optimas)
+    kp = variables_optimas[0][0]
+    ki = variables_optimas[0][1]
+    kd = variables_optimas[0][2]
+    print('Las parametros optimos para el controlador son')
+    print(f'Ganancia proporcional: {kp}')
+    print(f'Ganancia integral: {ki}')
+    print(f'Ganancia derivativa: {kd}')
+    #arr = list([kp, ki, kd])
+    #np.savetxt('values_PID.txt', arr, delimiter = '    ')
+    print('Parametros cargados...')
